@@ -1,4 +1,6 @@
 data/
+modelos/
+*.joblib
 *.zip
 .ipynb_checkpoints/
 __pycache__/
