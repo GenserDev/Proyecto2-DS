@@ -40,6 +40,35 @@ kaggle competitions download -c feedback-prize-effectiveness -p data/raw && unzi
 jupyter notebook notebooks/eda-argumentos-efectivos.ipynb
 ```
 
+## Fase 2. Modelado y aplicación
+
+El notebook `notebooks/modelado-argumentos-efectivos.ipynb` entrena y compara los modelos.
+La partición de entrenamiento y prueba se agrupa por `essay_id`, porque los fragmentos del
+mismo ensayo comparten autor y tema.
+
+**Correr la aplicación**
+
+```bash
+pip install -r app/requirements.txt
+```
+
+```bash
+streamlit run app/app.py
+```
+
+La aplicación busca los modelos entrenados en la carpeta `modelos`. Hay que correr primero el
+notebook de modelado y copiar ahí los archivos `.joblib` que genera.
+
+## Estructura
+
+```
+notebooks/   análisis exploratorio y modelado
+app/         aplicación de Streamlit
+informe/     informe, marco teórico y guion de la presentación
+data/        datos de Kaggle, no se versiona
+modelos/     modelos entrenados, no se versiona
+```
+
 ## Notas
 
 El notebook fue desarrollado y ejecutado en Kaggle, por eso la variable `ruta`
