@@ -1,4 +1,6 @@
+import json
 import os
+
 import joblib
 import numpy as np
 import pandas as pd
@@ -39,6 +41,14 @@ def buscar(nombre):
     return None
 
 
+def cargar_referencias():
+    ruta = buscar('referencias.json')
+    if not ruta:
+        return None
+    with open(ruta) as archivo:
+        return json.load(archivo)
+
+
 def cargar_artefactos():
     modelos = {}
 
@@ -61,7 +71,7 @@ def cargar_artefactos():
     return modelos
 
 
-def predecir(artefacto, texto, tipo):
+def predecir(artefacto, texto, tipo, referencias=None):
     entrada = pd.DataFrame([{
         'discourse_id': 'nuevo',
         'essay_id': 'nuevo',
@@ -70,6 +80,13 @@ def predecir(artefacto, texto, tipo):
     }])
     entrada = construir_variables(entrada)
     entrada['texto_completo'] = entrada['discourse_type'] + ' [SEP] ' + entrada['discourse_text']
+
+    if referencias:
+        for columna, valor in referencias['mediana_ensayo'].items():
+            entrada[columna] = valor
+        mediana_tipo = referencias['mediana_por_tipo'].get(tipo)
+        if mediana_tipo:
+            entrada['palabras_vs_tipo'] = entrada['n_palabras'] / mediana_tipo
 
     matriz_texto = artefacto['vectorizador'].transform(entrada['texto_completo'])
 

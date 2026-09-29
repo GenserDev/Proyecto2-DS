@@ -6,7 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from preparacion import construir_variables, cargar_artefactos, predecir
+from preparacion import construir_variables, cargar_artefactos, cargar_referencias, predecir
 
 PALETA = {
     'Ineffective': '#C1495B',
@@ -43,7 +43,12 @@ def cargar_modelos():
     return cargar_artefactos()
 
 
-def seccion_clasificar(modelos):
+@st.cache_data
+def cargar_medianas():
+    return cargar_referencias()
+
+
+def seccion_clasificar(modelos, referencias):
     st.header('Clasificar un argumento')
     st.write('Escribe un fragmento argumentativo y elige qué función cumple dentro del ensayo.')
 
@@ -71,7 +76,7 @@ def seccion_clasificar(modelos):
         st.warning('Elige al menos un modelo.')
         return
 
-    salidas = {nombre: predecir(modelos[nombre], texto, tipo) for nombre in elegidos}
+    salidas = {nombre: predecir(modelos[nombre], texto, tipo, referencias) for nombre in elegidos}
 
     for nombre, probabilidades in salidas.items():
         st.subheader(nombre)
@@ -201,6 +206,7 @@ st.caption('Reto 19, Feedback Prize. CC3084 Data Science, Universidad del Valle 
 modelos = cargar_modelos()
 datos = cargar_datos()
 metricas = cargar_metricas()
+referencias = cargar_medianas()
 
 if not modelos:
     st.warning('No se encontraron modelos entrenados. Corre el notebook de modelado y copia los '
@@ -209,7 +215,7 @@ if not modelos:
 clasificar, explorar, rendimiento = st.tabs(['Clasificar', 'Explorar datos', 'Rendimiento'])
 
 with clasificar:
-    seccion_clasificar(modelos)
+    seccion_clasificar(modelos, referencias)
 
 with explorar:
     seccion_datos(datos)
